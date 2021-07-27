@@ -9,6 +9,23 @@ async function getImageInfo(image) {
   return await sharp(image).metadata()
 }
 
+function getLogoPosition() {
+  const positions = [
+    "north",
+    "northeast",
+    "southeast",
+    "south",
+    "southwest",
+    "west",
+    "northwest",
+    "east",
+    "center",
+    "centre",
+  ]
+
+  return positions[Math.floor(Math.random() * positions.length)]
+}
+
 function createTile(image, { rotate, bottom, info } = {}) {
   if (bottom) {
     return sharp(image)
@@ -33,10 +50,12 @@ async function makeImage({ image, rotate = false, output, bottom }) {
   const topRightImage = path.resolve(__dirname, "temp/top-right.jpg")
   const bottomRightImage = path.resolve(__dirname, "temp/bottom-right.jpg")
   const bottomLeftImage = path.resolve(__dirname, "temp/bottom-left.jpg")
-  const logo = path.resolve(__dirname, "reduce-logo.png")
+  const logo = path.resolve(__dirname, "logo-big.png")
 
   try {
     const imageInfo = await getImageInfo(sourceImage)
+
+    console.log("image", imageInfo)
 
     await createTile(sourceImage, { rotate, bottom, info: imageInfo })
       .flip()
@@ -84,7 +103,7 @@ async function makeImage({ image, rotate = false, output, bottom }) {
         },
         {
           input: logo,
-          gravity: "center",
+          gravity: getLogoPosition(),
         },
       ])
       .jpeg({
