@@ -3,6 +3,7 @@ const fs = require("fs")
 const path = require("path")
 
 const SIZE = 1200
+const QUALITY = 100
 
 async function getImageInfo(image) {
   return await sharp(image).metadata()
@@ -39,11 +40,24 @@ async function makeImage({ image, rotate = false, output, bottom }) {
 
     await createTile(sourceImage, { rotate, bottom, info: imageInfo })
       .flip()
+      .jpeg({
+        quality: QUALITY,
+      })
       .toFile(topRightImage)
 
-    await createTile(topRightImage).flip().toFile(bottomRightImage)
+    await createTile(topRightImage)
+      .flip()
+      .jpeg({
+        quality: QUALITY,
+      })
+      .toFile(bottomRightImage)
 
-    await createTile(bottomRightImage).flop().toFile(bottomLeftImage)
+    await createTile(bottomRightImage)
+      .flop()
+      .jpeg({
+        quality: QUALITY,
+      })
+      .toFile(bottomLeftImage)
 
     await createTile(sourceImage, { rotate, bottom, info: imageInfo })
       .flip()
@@ -73,6 +87,9 @@ async function makeImage({ image, rotate = false, output, bottom }) {
           gravity: "center",
         },
       ])
+      .jpeg({
+        quality: QUALITY,
+      })
       .toFile(
         path.resolve(
           __dirname,
